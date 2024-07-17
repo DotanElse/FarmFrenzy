@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -6,42 +7,112 @@ using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set;}
+
+    public event EventHandler<OnSelectedCounterChangedArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangedArgs : EventArgs
+    {
+        public ClearCounter selectedCounter;
+    }
     [SerializeField] private float speedModifier = 10f;
     [SerializeField] private float rotationModifier = 10f;
+    [SerializeField] private GameInput gameInput;
+    [SerializeField] private LayerMask countersLayerMask;
+    float playerHeight = 2f;
+    float playerRadius = 0.7f;
     private bool isWalking = false;
+    private Vector3 lastMovement;
+
+    private ClearCounter selectedCounter;
+
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Player created");
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
+    }
+    void Awake()
+    {
+        if(Instance = null)
+            Debug.LogError("More than one player");
+        Instance = this;
+    }
+
+    private void GameInput_OnInteractAction(object sender, EventArgs e)
+    {
+        if(selectedCounter != null)
+            selectedCounter.Interact();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        Vector2 inputVector = new Vector2(0,0);
-        if(Input.GetKey(KeyCode.W))
-        {
-            inputVector.y = 1;
-        }
-        if(Input.GetKey(KeyCode.S))
-        {
-            inputVector.y = -1;
-        }
-        if(Input.GetKey(KeyCode.D))
-        {
-            inputVector.x = 1;
-        }
-        if(Input.GetKey(KeyCode.A))
-        {
-            inputVector.x = -1;
-        }
-        isWalking = inputVector != Vector2.zero;
-        inputVector = inputVector.normalized;
-        Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
-        transform.position += moveDir*Time.deltaTime*speedModifier;
-        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime*rotationModifier);
-        Debug.Log(moveDir);
+        HandleMovement();
+        HandleInteractions();
+    }
 
+    private void HandleInteractions()
+    {
+        float interactDistance = 2.5f;
+        Vector2 inputVector = gameInput.GetMovementsVector();
+        if(inputVector != Vector2.zero)
+            lastMovement = new Vector3(inputVector.x, 0f, inputVector.y);
+
+        if(Physics.Raycast(transform.position, lastMovement, out RaycastHit rayHit, interactDistance, countersLayerMask))
+        {   
+            Debug.Log(rayHit.transform);
+            if(rayHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            {
+                if(clearCounter != selectedCounter)
+                {
+                    //Debug.Log("Hit a counter");
+                    SetSelectedCounter(clearCounter);
+                }        
+            }
+        }
+        else
+        {
+            Debug.Log("Hit no counter");
+            SetSelectedCounter(null);
+        }
+    }
+
+    private void HandleMovement()
+    {
+        Vector2 inputVector = gameInput.GetMovementsVector();
+        Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
+        float moveDistance = Time.deltaTime*speedModifier;
+
+        if(CanMove(moveDir, moveDistance))
+            transform.position += moveDir*moveDistance;
+        else
+        {
+            //try move only in X
+            Vector3 MoveX = new Vector3(moveDir.x, 0, 0).normalized;
+            if(CanMove(MoveX, moveDistance))
+                transform.position += MoveX*moveDistance;
+            //try move only in X
+            Vector3 MoveZ = new Vector3(0, 0, moveDir.z).normalized;
+            if(CanMove(MoveZ, moveDistance))
+                transform.position += MoveZ*moveDistance;
+        }
+
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime*rotationModifier);
+        isWalking = inputVector != Vector2.zero;
+    }
+    private bool CanMove(Vector3 moveDir, float moveDistance)
+    {
+        return !Physics.CapsuleCast(transform.position,
+         transform.position + Vector3.up*playerHeight, playerRadius, moveDir, moveDistance);
+
+    }
+
+    private void SetSelectedCounter(ClearCounter selectedCounter)
+    {
+        this.selectedCounter = selectedCounter;
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedArgs{
+            selectedCounter = selectedCounter
+            });
+        Debug.Log("yosi");
     }
 
     public bool IsWalking()
