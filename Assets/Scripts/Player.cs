@@ -59,19 +59,16 @@ public class Player : MonoBehaviour
 
         if(Physics.Raycast(transform.position, lastMovement, out RaycastHit rayHit, interactDistance, countersLayerMask))
         {   
-            Debug.Log(rayHit.transform);
             if(rayHit.transform.TryGetComponent(out ClearCounter clearCounter))
             {
                 if(clearCounter != selectedCounter)
                 {
-                    //Debug.Log("Hit a counter");
                     SetSelectedCounter(clearCounter);
                 }        
             }
         }
         else
         {
-            Debug.Log("Hit no counter");
             SetSelectedCounter(null);
         }
     }
@@ -112,7 +109,6 @@ public class Player : MonoBehaviour
         OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedArgs{
             selectedCounter = selectedCounter
             });
-        Debug.Log("yosi");
     }
 
     public bool IsWalking()
