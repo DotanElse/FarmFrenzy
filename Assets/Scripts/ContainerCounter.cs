@@ -12,8 +12,12 @@ public class ContainerCounter : BaseCounter
     {
         if(player.HasKitchenObject())
             return;
-        Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab, counterTopPoint);
-        kitchenObjectTransform.GetComponent<KitchenObject>().SetKitchenObjectParent(player); 
+        KitchenObject.SpawnKitchenObject(kitchenObjectSO, player);
         OnPlayerGrabbedObject?.Invoke(this, EventArgs.Empty);
+    }
+
+    public override void InteractAlternate(Player player)
+    {
+        Debug.Log("alt interacting with container");
     }
 }
