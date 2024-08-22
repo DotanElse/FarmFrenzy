@@ -12,6 +12,9 @@ public class CuttingCounter : BaseCounter
     }
     private int cuttingProgress;
     [SerializeField] private CuttingRecipeSO[] recipes;
+    public event EventHandler OnCut;
+
+
     public override void Interact(Player player)
     {
         if(!HasKitchenObject())
@@ -19,9 +22,12 @@ public class CuttingCounter : BaseCounter
             if(player.HasKitchenObject())
             {
                 cuttingProgress = 0;
-                OnProgressChange?.Invoke(this,  new OnProgressChangeArgs{
-                normalizedProgress = cuttingProgress
-                });
+                if(HasRecipe(player.GetKitchenObject().GetKitchenObjectSO()))
+                {
+                    OnProgressChange?.Invoke(this,  new OnProgressChangeArgs{
+                    normalizedProgress = cuttingProgress
+                    });
+                }
                 player.GetKitchenObject().SetKitchenObjectParent(this);
             }
         }
@@ -41,6 +47,7 @@ public class CuttingCounter : BaseCounter
             if(output == null)
                 return;
             cuttingProgress++;
+            OnCut?.Invoke(this, EventArgs.Empty);
             int requiredCuts = GetRequiredCuts(GetKitchenObject().GetKitchenObjectSO());
             OnProgressChange?.Invoke(this,  new OnProgressChangeArgs{
                 normalizedProgress = (float)cuttingProgress/requiredCuts
@@ -56,7 +63,7 @@ public class CuttingCounter : BaseCounter
 
     private bool HasRecipe(KitchenObjectSO item)
     {
-        return GetCutResult(item) == null;
+        return GetCutResult(item) != null;
     }
 
     private int GetRequiredCuts(KitchenObjectSO item)

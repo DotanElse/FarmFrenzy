@@ -12,8 +12,8 @@ public class ProgressBarUI : MonoBehaviour
     {
         Debug.Log("init");
         cuttingCounter.OnProgressChange += setBarProgress;
-        Hide();
         barImage.fillAmount = 0f;
+        Hide();
     }
 
     void setBarProgress(object sender, CuttingCounter.OnProgressChangeArgs e)
