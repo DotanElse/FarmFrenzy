@@ -36,6 +36,7 @@ public class ClearCounter : BaseCounter
                     {
                         //ingredient added to player's plate
                         GetKitchenObject().DestroySelf();
+                        return;
                     }
                 }
                 if(GetKitchenObject().TryGetPlate(out plateKitchenObject))

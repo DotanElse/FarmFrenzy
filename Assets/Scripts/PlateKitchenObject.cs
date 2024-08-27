@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,14 @@ public class PlateKitchenObject : KitchenObject
 {
     [SerializeField] private List<KitchenObjectSO> allowedItems;
     private List<KitchenObjectSO> itemsOnPlate;
+    public event EventHandler<OnIngredientAddArgs> OnIngredientAdd;
+
+    public class OnIngredientAddArgs : EventArgs
+    {
+        public KitchenObjectSO ingredient;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +36,9 @@ public class PlateKitchenObject : KitchenObject
         {
             //new item on plate
             itemsOnPlate.Add(item);
+            OnIngredientAdd?.Invoke(this, new OnIngredientAddArgs{
+                ingredient = item
+            });
             return true; 
         }
         return false;
