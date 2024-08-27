@@ -15,7 +15,6 @@ public class PlateKitchenObject : KitchenObject
         public KitchenObjectSO ingredient;
     }
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -42,5 +41,9 @@ public class PlateKitchenObject : KitchenObject
             return true; 
         }
         return false;
+    }
+    public List<KitchenObjectSO> GetItemsOnPlate()
+    {
+        return itemsOnPlate;
     }
 }
