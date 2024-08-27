@@ -6,25 +6,33 @@ using UnityEngine.UI;
 public class ProgressBarUI : MonoBehaviour
 {
     [SerializeField] private Image barImage;
-    [SerializeField] private CuttingCounter cuttingCounter; 
+    [SerializeField] private GameObject hasProgressGO;
+
+    private IHasProgress hasProgress;
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("init");
-        cuttingCounter.OnProgressChange += setBarProgress;
+        hasProgress = hasProgressGO.GetComponent<IHasProgress>();
+        if(hasProgress == null)
+        {
+            Debug.LogError($"component doesnt have progress: {hasProgressGO}");
+
+        }
+        hasProgress.OnProgressChange += setBarProgress;
         barImage.fillAmount = 0f;
         Hide();
     }
 
-    void setBarProgress(object sender, CuttingCounter.OnProgressChangeArgs e)
+    void setBarProgress(object sender, IHasProgress.OnProgressChangeArgs e)
     {
-        if(e.normalizedProgress != 1f)
+        if(e.normalizedProgress < 1f && e.normalizedProgress > 0f)
         {
             barImage.fillAmount = e.normalizedProgress;
             Debug.Log($"progressed, {e.normalizedProgress}");
             Show();
         }
-        else{
+        else
+        {
             Hide();
         }
     }
