@@ -100,7 +100,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                     });
                     state = State.Frying;
                     OnStateChange?.Invoke(this, new OnStateChangeArgs{state = this.state});
-                } 
+                }
             }
         }
         else
@@ -114,6 +114,24 @@ public class StoveCounter : BaseCounter, IHasProgress
                 });
                 state = State.Idle;
                 OnStateChange?.Invoke(this, new OnStateChangeArgs{state = this.state});
+            }
+            else
+            {
+            //full counter and player has an object in hand
+                if(player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
+                {
+                    if(plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
+                    {
+                        //ingredient added
+                        GetKitchenObject().DestroySelf();
+                        OnProgressChange?.Invoke(this,  new IHasProgress.OnProgressChangeArgs{
+                            normalizedProgress = 0f
+                        });
+                        state = State.Idle;
+                        OnStateChange?.Invoke(this, new OnStateChangeArgs{state = this.state});
+                    }
+                }
+                 
             }
         }
     }

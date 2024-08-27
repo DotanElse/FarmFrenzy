@@ -28,7 +28,6 @@ public class ProgressBarUI : MonoBehaviour
         if(e.normalizedProgress < 1f && e.normalizedProgress > 0f)
         {
             barImage.fillAmount = e.normalizedProgress;
-            Debug.Log($"progressed, {e.normalizedProgress}");
             Show();
         }
         else
