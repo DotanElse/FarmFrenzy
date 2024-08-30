@@ -8,6 +8,10 @@ public class DeliveryManager : MonoBehaviour
 {
     public event EventHandler OnRecipeSpawned;
     public event EventHandler OnRecipeCompleted;
+
+    public static event EventHandler OnSuccessDelivery;
+    public static event EventHandler OnFailDelivery;
+
     public static DeliveryManager Instance {get; private set;}
     [SerializeField] private RecipeListSO recipes;
     private List<RecipeSO> waitingRecipes;
@@ -40,10 +44,6 @@ public class DeliveryManager : MonoBehaviour
     public void DeliverRecipe(PlateKitchenObject plateKitchenObject)
     {
         List<KitchenObjectSO> plateItems = plateKitchenObject.GetItemsOnPlate();
-        foreach(KitchenObjectSO item in plateItems)
-            {
-                Debug.Log($"Plate contained before delivery {item.name}");
-            }
         for(int i=0; i<waitingRecipes.Count; i++)
         {
             List<KitchenObjectSO> recipeItems = waitingRecipes[i].items;
@@ -53,16 +53,15 @@ public class DeliveryManager : MonoBehaviour
             if(areEqual)
             {
                 Debug.Log("Delivered successfully");
-                foreach(KitchenObjectSO item in plateItems)
-                {
-                    Debug.Log($"Plate contained {item.name}");
-                }
+                
                 waitingRecipes.RemoveAt(i);
+                OnSuccessDelivery?.Invoke(this, EventArgs.Empty);
                 OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
-                break;
+                return;
             }
         }
         Debug.Log("No waiting recipe match");
+        OnFailDelivery?.Invoke(this, EventArgs.Empty);
     }
 
     public List<RecipeSO> GetWaitingRecipes()
