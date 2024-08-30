@@ -36,9 +36,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAlternateAction(object sender, EventArgs e)
     {
-        Debug.Log("Action");
-            if(selectedCounter != null)
-                selectedCounter.InteractAlternate(this);
+        if(selectedCounter != null)
+            selectedCounter.InteractAlternate(this);
     }
 
     void Awake()

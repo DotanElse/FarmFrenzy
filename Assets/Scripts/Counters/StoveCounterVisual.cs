@@ -16,7 +16,6 @@ public class StoveCounterVisual : MonoBehaviour
 
     private void StoveCounter_OnStateChange(object sender, StoveCounter.OnStateChangeArgs e)
     {
-        Debug.Log(e.state);
         if(e.state == StoveCounter.State.Frying || e.state == StoveCounter.State.Fried)
         {
             stoveOn.SetActive(true);

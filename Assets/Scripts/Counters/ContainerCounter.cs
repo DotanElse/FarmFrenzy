@@ -18,6 +18,5 @@ public class ContainerCounter : BaseCounter
 
     public override void InteractAlternate(Player player)
     {
-        Debug.Log("alt interacting with container");
     }
 }
