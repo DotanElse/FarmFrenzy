@@ -11,6 +11,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     public static Player Instance { get; private set;}
 
     public event EventHandler OnPickedSomething;
+    public event EventHandler OnMovement;
     public event EventHandler<OnSelectedCounterChangedArgs> OnSelectedCounterChanged;
     public class OnSelectedCounterChangedArgs : EventArgs
     {
@@ -23,6 +24,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     float playerHeight = 2f;
     float playerRadius = 0.7f;
     private bool isWalking = false;
+    private float walkingSoundTimeMax = 0.15f;
+    private float walkingSoundTime = 0;
     private Vector3 lastMovement;
 
     private BaseCounter selectedCounter;
@@ -38,6 +41,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAlternateAction(object sender, EventArgs e)
     {
+        if(!KitchenGameManager.Instance.isGamePlaying()) return;
         if(selectedCounter != null)
             selectedCounter.InteractAlternate(this);
     }
@@ -51,6 +55,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
+        if(!KitchenGameManager.Instance.isGamePlaying()) return;
         if(selectedCounter != null)
             selectedCounter.Interact(this);
     }
@@ -90,6 +95,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         Vector2 inputVector = gameInput.GetMovementsVector();
         Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
         float moveDistance = Time.deltaTime*speedModifier;
+        walkingSoundTime += Time.deltaTime;
 
         if(CanMove(moveDir, moveDistance))
             transform.position += moveDir*moveDistance;
@@ -99,7 +105,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             Vector3 MoveX = new Vector3(moveDir.x, 0, 0).normalized;
             if(CanMove(MoveX, moveDistance))
                 transform.position += MoveX*moveDistance;
-            //try move only in X
+            //try move only in Z
             Vector3 MoveZ = new Vector3(0, 0, moveDir.z).normalized;
             if(CanMove(MoveZ, moveDistance))
                 transform.position += MoveZ*moveDistance;
@@ -107,6 +113,11 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime*rotationModifier);
         isWalking = inputVector != Vector2.zero;
+        if(isWalking && walkingSoundTime > walkingSoundTimeMax)
+        {
+            walkingSoundTime=0f;
+            OnMovement?.Invoke(this, EventArgs.Empty);
+        }
     }
     private bool CanMove(Vector3 moveDir, float moveDistance)
     {
@@ -138,8 +149,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         this.kitchenObject = kitchenObject;
         if(kitchenObject != null)
         {
-            OnPickedSomething?.Invoke(this, EventArgs.Empty);
         }
+            OnPickedSomething?.Invoke(this, EventArgs.Empty);
     }
     public KitchenObject GetKitchenObject()
     {

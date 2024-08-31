@@ -14,6 +14,14 @@ public class SoundManager : MonoBehaviour
         Player.Instance.OnPickedSomething += OnObjectPickup;
         BaseCounter.OnObjectDrop += OnObjectDrop;
         TrashCounter.OnObjectTrashed += OnObjectTrashed;
+        Player.Instance.OnMovement += OnPlayerMovement;
+    }
+
+
+    private void OnPlayerMovement(object sender, System.EventArgs e)
+    {
+        Player player = Player.Instance;
+        PlaySound(audioClipsRefsSO.footstep, player.transform.position);
     }
 
     private void OnObjectTrashed(object sender, System.EventArgs e)
