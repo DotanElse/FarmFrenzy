@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class KitchenGameManager : MonoBehaviour
@@ -22,7 +23,7 @@ public class KitchenGameManager : MonoBehaviour
     float gameTime = 0;
     int waitingForGameStartTimer = 1;
     int countdownTimer = 3;
-    int gameTimer = 5;
+    int gameTimer = 120;
     void Start()
     {
         gameState = GameState.WaitingForGameStart;
@@ -55,6 +56,13 @@ public class KitchenGameManager : MonoBehaviour
     {   
         int timeLeft = (int)Mathf.Ceil(countdownTimer - gameTime);
         return (int)Mathf.Max(0f, timeLeft);
+    }
+
+    public float getGametimePassedNormalized()
+    {
+        if(gameState == GameState.Playing)
+            return Mathf.Max(1f - (gameTime/gameTimer), 0);
+        return 0;
     }
 
     private void UpdateState()
