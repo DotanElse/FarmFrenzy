@@ -16,6 +16,11 @@ public abstract class BaseCounter : MonoBehaviour, IKitchenObjectParent
         return counterTopPoint;
     }
 
+    public static void ClearStaticData()
+    {
+        OnObjectDrop = null;
+    }
+
     public void SetKitchenObject(KitchenObject kitchenObject)
     {
         this.kitchenObject = kitchenObject;

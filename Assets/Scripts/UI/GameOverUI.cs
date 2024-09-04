@@ -20,6 +20,7 @@ public class GameOverUI : MonoBehaviour
     {
         if(e.state == KitchenGameManager.GameState.GameOver)
         {
+            recipesDelivered.text = DeliveryManager.Instance.GetRecipeCompleted().ToString();
             gameObject.SetActive(true);
         }
         else
