@@ -8,12 +8,22 @@ public class GamePauseUI : MonoBehaviour
 {
     [SerializeField] Button resumeButton;
     [SerializeField] Button quitButton;
+    [SerializeField] Button optionsButton;
+    public static GamePauseUI Instance {get; private set;}
 
+    public event EventHandler OnOptionClick;
+
+
+    void Awake()
+    {
+        Instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
         resumeButton.onClick.AddListener(() => {Debug.Log("Clicked"); KitchenGameManager.Instance.ToggleGamePause();});
         quitButton.onClick.AddListener(() => {Loader.Load(Loader.Scene.MainMenuScene);});
+        optionsButton.onClick.AddListener(() => {OnOptionClick?.Invoke(this, EventArgs.Empty); Hide();});
         KitchenGameManager.Instance.OnGamePaused += OnGamePausedUI;
         KitchenGameManager.Instance.OnGameUnpaused += OnGameUnpausedUI;
         Hide();

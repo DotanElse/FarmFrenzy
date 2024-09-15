@@ -5,7 +5,15 @@ using UnityEngine.Rendering;
 
 public class SoundManager : MonoBehaviour
 {
+
     [SerializeField] AudioClipsRefsSO audioClipsRefsSO; 
+    public static SoundManager Instance {get; private set;}
+    int volume = 5;
+
+    void Awake()
+    {
+        Instance = this;
+    }
     public void Start()
     {
         CuttingCounter.OnAnyCut += Chop;
@@ -15,6 +23,24 @@ public class SoundManager : MonoBehaviour
         BaseCounter.OnObjectDrop += OnObjectDrop;
         TrashCounter.OnObjectTrashed += OnObjectTrashed;
         Player.Instance.OnMovement += OnPlayerMovement;
+    }
+
+    public int ChangeVolume(bool increase)
+    {
+        Debug.Log($"Before changing {volume}");
+        if(increase && volume < 10)
+        {
+            volume++;
+            Debug.Log("Increased");
+        }
+        if(!increase && volume > 0)
+        {
+            volume--;
+            Debug.Log("Decreased");
+        }
+            
+        Debug.Log($"After changing {volume}");
+        return volume;
     }
 
 
@@ -60,8 +86,8 @@ public class SoundManager : MonoBehaviour
         PlaySound(audioClipsRefsSO.chop, cuttingCounter.transform.position);
     }
 
-    private void PlaySound(AudioClip[] clips, Vector3 position, float volume = 1f)
+    private void PlaySound(AudioClip[] clips, Vector3 position)
     {
-        AudioSource.PlayClipAtPoint(clips[Random.Range(0, clips.Length)], position, volume);
+        AudioSource.PlayClipAtPoint(clips[Random.Range(0, clips.Length)], position, volume/10);
     }
 }
