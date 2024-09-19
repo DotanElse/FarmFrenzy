@@ -5,14 +5,19 @@ using UnityEngine.Rendering;
 
 public class SoundManager : MonoBehaviour
 {
-
+    private const string SOUND_EFFECTS_VOLUME = "SFX_Volume";
+    private const string MUSIC_VOLUME = "MUSIC_Volume";
     [SerializeField] AudioClipsRefsSO audioClipsRefsSO; 
+    [SerializeField] AudioSource music;
     public static SoundManager Instance {get; private set;}
-    int volume = 5;
+    int volume;
+    int bgmVolume;
 
     void Awake()
     {
         Instance = this;
+        volume = PlayerPrefs.GetInt(SOUND_EFFECTS_VOLUME, 5);
+        bgmVolume = PlayerPrefs.GetInt(MUSIC_VOLUME, 5);
     }
     public void Start()
     {
@@ -23,6 +28,16 @@ public class SoundManager : MonoBehaviour
         BaseCounter.OnObjectDrop += OnObjectDrop;
         TrashCounter.OnObjectTrashed += OnObjectTrashed;
         Player.Instance.OnMovement += OnPlayerMovement;
+    }
+
+    public int GetSoundVolume()
+    {
+        return PlayerPrefs.GetInt(MUSIC_VOLUME, 5);
+    }
+
+    public int GetSFXVolume()
+    {
+        return PlayerPrefs.GetInt(SOUND_EFFECTS_VOLUME, 5);
     }
 
     public int ChangeVolume(bool increase)
@@ -40,8 +55,28 @@ public class SoundManager : MonoBehaviour
         }
             
         Debug.Log($"After changing {volume}");
+        PlayerPrefs.SetInt(SOUND_EFFECTS_VOLUME, volume);
         return volume;
     }
+    public int ChangeBGMVolume(bool increase)
+    {
+        Debug.Log($"Before changing {bgmVolume}");
+        if(increase && bgmVolume < 10)
+        {
+            bgmVolume++;
+            Debug.Log("Increased");
+        }
+        if(!increase && bgmVolume > 0)
+        {
+            bgmVolume--;
+            Debug.Log("Decreased");
+        }
+            
+        Debug.Log($"After changing {bgmVolume}");
+        PlayerPrefs.SetInt(MUSIC_VOLUME, volume);
+        return bgmVolume;
+    }
+
 
 
     private void OnPlayerMovement(object sender, System.EventArgs e)

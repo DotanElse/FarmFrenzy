@@ -10,20 +10,34 @@ public class GameOptionUI : MonoBehaviour
 {
     [SerializeField] Button sfxUpButton;
     [SerializeField] Button sfxDownButton;
+    [SerializeField] Button SoundUpButton;
+    [SerializeField] Button SoundDownButton;
     [SerializeField] Button returnButton;
     [SerializeField] Button mainMenuButton;
 
     [SerializeField] private TextMeshProUGUI sfxValue;
+    [SerializeField] private TextMeshProUGUI soundValue;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        UpdateSFXUI(SoundManager.Instance.GetSFXVolume());
+        UpdateSoundUI(SoundManager.Instance.GetSoundVolume());
         sfxUpButton.onClick.AddListener(() => {
             UpdateSFXUI(SoundManager.Instance.ChangeVolume(true));
         });
         sfxDownButton.onClick.AddListener(() => {
             UpdateSFXUI(SoundManager.Instance.ChangeVolume(false));
         });
+        SoundUpButton.onClick.AddListener(() => {
+            UpdateSoundUI(SoundManager.Instance.ChangeBGMVolume(true));
+        });
+        SoundDownButton.onClick.AddListener(() => {
+            UpdateSoundUI(SoundManager.Instance.ChangeBGMVolume(false));
+        });
+    
+
         returnButton.onClick.AddListener(()=> 
         {
             Hide();
@@ -45,6 +59,12 @@ public class GameOptionUI : MonoBehaviour
         Debug.Log($"got {value} to update");
         sfxValue.text = value.ToString();
     }
+    private void UpdateSoundUI(int value)
+    {
+        Debug.Log($"got {value} to update");
+        soundValue.text = value.ToString();
+    }
+
 
     private void OnGameOptionsHide(object sender, EventArgs e)
     {
