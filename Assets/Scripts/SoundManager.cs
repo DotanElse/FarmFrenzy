@@ -28,6 +28,7 @@ public class SoundManager : MonoBehaviour
         BaseCounter.OnObjectDrop += OnObjectDrop;
         TrashCounter.OnObjectTrashed += OnObjectTrashed;
         Player.Instance.OnMovement += OnPlayerMovement;
+        music.volume = bgmVolume/10f;
     }
 
     public int GetSoundVolume()
@@ -71,8 +72,8 @@ public class SoundManager : MonoBehaviour
             bgmVolume--;
             Debug.Log("Decreased");
         }
-            
-        Debug.Log($"After changing {bgmVolume}");
+        music.volume = bgmVolume/10f;
+        Debug.Log($"After changing {music.volume} and i set it to {bgmVolume/10f}");
         PlayerPrefs.SetInt(MUSIC_VOLUME, bgmVolume);
         return bgmVolume;
     }
