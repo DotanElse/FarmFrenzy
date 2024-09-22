@@ -73,7 +73,7 @@ public class SoundManager : MonoBehaviour
         }
             
         Debug.Log($"After changing {bgmVolume}");
-        PlayerPrefs.SetInt(MUSIC_VOLUME, volume);
+        PlayerPrefs.SetInt(MUSIC_VOLUME, bgmVolume);
         return bgmVolume;
     }
 
